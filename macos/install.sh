@@ -7,7 +7,12 @@ DEST="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/oh-my-timer"
 chmod +x "$SRC/oh-my-timer.py"
 mkdir -p "$(dirname "$DEST")"
 
-if [ -L "$DEST" ] || [ -e "$DEST" ]; then
+OLD_SRC="$(cd "$SRC/.." && pwd)"  # pre-split layout linked the repo root
+
+if [ -L "$DEST" ] && [ "$(readlink "$DEST")" = "$OLD_SRC" ]; then
+  ln -sfn "$SRC" "$DEST"
+  echo "Updated link $DEST -> $SRC"
+elif [ -L "$DEST" ] || [ -e "$DEST" ]; then
   if [ "$(readlink "$DEST" 2>/dev/null || true)" = "$SRC" ]; then
     echo "Already installed: $DEST -> $SRC"
   else
